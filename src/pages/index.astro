@@ -1,0 +1,177 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import Card from "@/components/Card.astro";
+import Hr from "@/components/Hr.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import { slugifyStr } from "@/utils/slugify";
+import Tag from "@/components/Tag.astro";
+
+const posts = await getCollection("blog");
+
+const sortedPosts = getSortedPosts(posts);
+const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
+const recentPosts = sortedPosts
+  .filter(({ data }) => !data.featured)
+  .slice(0, 3);
+
+// Stats
+const totalPosts = sortedPosts.length;
+const uniqueTags = [
+  ...new Set(sortedPosts.flatMap((post) => post.data.tags || [])),
+];
+const totalTags = uniqueTags.length;
+---
+
+<Layout>
+  <Header />
+  <main id="main-content" data-layout="index">
+    <section id="hero" class="pt-8 pb-6">
+      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
+        Hello, World!
+      </h1>
+
+      <div class="my-6 text-lg text-foreground/80 leading-relaxed">
+        <p class="mb-4">
+          Selamat datang di blog pribadi saya! Di sini saya berbagi pemikiran,
+          pengalaman, dan pembelajaran tentang
+          <span
+            class="text-accent hover:decoration-dashed hover:underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
+            >menulis,
+          </span>
+          <span
+            class="text-accent hover:decoration-dashed hover:underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
+            >teknologi,
+          </span>
+          <span
+            class="text-accent hover:decoration-dashed hover:underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
+            >programming,
+          </span>dan
+          <span
+            class="text-accent hover:decoration-dashed hover:underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
+            >pengembangan web.</span
+          >
+        </p>
+        <p class="mb-4">
+          Dari eksplorasi mendalam mengenai arsitektur, teknologi, hingga
+          strategi-strategi dalam aplikasi web modern, semua ditulis dengan
+          perspektif praktis untuk semuanya.
+        </p>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="flex flex-wrap gap-6 my-8 text-sm">
+        <div class="flex items-center gap-2 cursor-pointer">
+          <span class="w-2 h-2 bg-accent rounded-full" aria-label="Dot Articles"
+          ></span>
+          <span class="hover:text-accent"
+            ><strong>{totalPosts}</strong> artikel</span
+          >
+        </div>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <span class="w-2 h-2 bg-accent rounded-full" aria-label="Dot Tags"
+          ></span>
+          <span class="hover:text-accent"
+            ><strong>{totalTags}</strong> topik</span
+          >
+        </div>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <span class="w-2 h-2 bg-accent rounded-full" aria-label="Dot RSS"
+          ></span>
+          <span class="hover:text-accent"
+            >Diperbarui <strong>secara berkala</strong></span
+          >
+        </div>
+      </div>
+    </section>
+
+    <Hr />
+
+    {
+      featuredPosts.length > 0 && (
+        <>
+          <section id="featured" class="pt-12 pb-6">
+            <div class="mb-6">
+              <h2 class="text-2xl font-semibold tracking-wide mb-2">
+                Unggulan
+              </h2>
+              <p class="text-foreground/70 text-sm">
+                Artikel pilihan yang mungkin menarik untuk Anda baca
+              </p>
+            </div>
+            <ul class="space-y-4">
+              {featuredPosts.map((data) => (
+                <Card variant="h3" {...data} />
+              ))}
+            </ul>
+          </section>
+          {recentPosts.length > 0 && <Hr />}
+        </>
+      )
+    }
+
+    {
+      recentPosts.length > 0 && (
+        <section id="recent-posts" class="pt-12 pb-6">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold tracking-wide mb-2">
+              Baru-baru ini
+            </h2>
+            <p class="text-foreground/70 text-sm">
+              Artikel terbaru yang baru-baru ini dipublikasikan
+            </p>
+          </div>
+          <ul class="space-y-4">
+            {recentPosts.map((data) => (
+              <Card variant="h3" {...data} />
+            ))}
+          </ul>
+        </section>
+      )
+    }
+    <Hr />
+
+    {
+      uniqueTags.length > 0 && (
+        <section id="popular-tags" class="pt-12 pb-6">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold tracking-wide mb-2">
+              Topik Populer
+            </h2>
+            <p class="text-foreground/70 text-sm">
+              Jelajahi artikel berdasarkan topik yang sering dibahas
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <ul class="mt-4 mb-8 sm:my-8">
+              {uniqueTags.map((tag) => (
+                <Tag tag={slugifyStr(tag)} tagName={tag} />
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+    <div class="my-8 text-center">
+      <LinkButton href="/posts/" class="inline-flex items-center gap-2">
+        Semua Postingan
+        <IconArrowRight class="inline-block rtl:-rotate-180" />
+      </LinkButton>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
+      ?.dataset?.layout;
+    if (indexLayout) {
+      sessionStorage.setItem("backUrl", "/");
+    }
+  });
+</script>

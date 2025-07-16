@@ -1,0 +1,45 @@
+---
+import { SOCIALS } from "@/constants";
+import LinkButton from "./LinkButton.astro";
+import IconRss from "@/assets/icons/IconRss.svg";
+
+export interface Props {
+  centered?: boolean;
+  rss?: boolean;
+}
+
+const { centered = false, rss = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    "flex flex-wrap justify-center gap-1",
+    { "justify-center": centered },
+  ]}
+>
+  {
+    SOCIALS.map((social) => (
+      <LinkButton
+        href={social.href}
+        class="p-2 sm:p-1"
+        title={social.linkTitle}
+      >
+        <social.icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110 hover:rotate-6" />
+        <span class="sr-only">{social.linkTitle}</span>
+      </LinkButton>
+    ))
+  }
+
+  {
+    rss && (
+      <LinkButton href="/rss.xml" class="p-2 sm:p-1" title="RSS Feed">
+        <IconRss
+          width={20}
+          height={20}
+          class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110 hover:rotate-6"
+        />
+        <span class="sr-only">RSS Feed</span>
+      </LinkButton>
+    )
+  }
+</div>
