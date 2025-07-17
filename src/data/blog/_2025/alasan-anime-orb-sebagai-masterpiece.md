@@ -13,4 +13,12 @@ tags:
 description: Disclaimer; Spoiler Alert
 ---
 
-# 3 Alasan Mengapa Anime Orb: On The Movements of the Earth dapat dikatakan sebagai masterpiece
+<figure>
+  <img
+    src="/assets/cover-anime-orb.webp"
+    alt="Cover Anime Orb"
+  />
+  <figcaption class="text-center">
+    Cover from <a href="https://www.reddit.com/r/Yorushika/comments/1eyb30x/yorushika_will_be_performing_the_ending_theme_for/" rel="noreferrer" target="_blank">Reddit</a>
+  </figcaption>
+</figure>
